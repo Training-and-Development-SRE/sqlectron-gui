@@ -1,8 +1,9 @@
 import { ipcRenderer, shell } from 'electron';
 import React, { useEffect, useState } from 'react';
+import { CONFIG } from '../api';
 
 const EVENT_KEY = 'sqlectron:update-available';
-const repo = window.SQLECTRON_CONFIG.repository.url.replace('https://github.com/', '');
+const repo = CONFIG.repository.url.replace('https://github.com/', '');
 const LATEST_RELEASE_URL = `https://github.com/${repo}/releases/latest`;
 
 const UpdateChecker = () => {

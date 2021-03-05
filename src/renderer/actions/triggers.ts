@@ -1,4 +1,4 @@
-import { getDBConnByName } from './connections';
+import { sqlectron } from '../api';
 
 export const FETCH_TRIGGERS_REQUEST = 'FETCH_TRIGGERS_REQUEST';
 export const FETCH_TRIGGERS_SUCCESS = 'FETCH_TRIGGERS_SUCCESS';
@@ -25,8 +25,7 @@ function fetchTableTriggers(database, table, schema) {
   return async (dispatch) => {
     dispatch({ type: FETCH_TRIGGERS_REQUEST, database, table });
     try {
-      const dbConn = getDBConnByName(database);
-      const triggers = await dbConn.listTableTriggers(table, schema);
+      const triggers = await sqlectron.listTableTriggers(database, table, schema);
       dispatch({
         type: FETCH_TRIGGERS_SUCCESS,
         database,

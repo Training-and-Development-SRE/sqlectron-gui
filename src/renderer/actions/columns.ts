@@ -1,4 +1,4 @@
-import { getDBConnByName } from './connections';
+import { sqlectron } from '../api';
 
 export const FETCH_COLUMNS_REQUEST = 'FETCH_COLUMNS_REQUEST';
 export const FETCH_COLUMNS_SUCCESS = 'FETCH_COLUMNS_SUCCESS';
@@ -25,8 +25,7 @@ function fetchTableColumns(database, table, schema) {
   return async (dispatch) => {
     dispatch({ type: FETCH_COLUMNS_REQUEST, database, table });
     try {
-      const dbConn = getDBConnByName(database);
-      const columns = await dbConn.listTableColumns(table, schema);
+      const columns = await sqlectron.db.listTableColumns(database, table, schema);
       dispatch({
         type: FETCH_COLUMNS_SUCCESS,
         database,

@@ -3,7 +3,8 @@ import trim from 'lodash.trim';
 import cloneDeep from 'lodash.clonedeep';
 import csvStringify from 'csv-stringify';
 import { clipboard } from 'electron';
-import { getCurrentDBConn, getDBConnByName } from './connections';
+import { getDatabaseByQueryID } from './connections';
+import { sqlectron } from '../api';
 import { rowsValuesToString } from '../utils/convert';
 import * as fileHandler from '../utils/file-handler';
 import wait from '../utils/wait';
@@ -59,8 +60,7 @@ export function executeQueryIfNeeded(query, queryId) {
 export function executeDefaultSelectQueryIfNeeded(database, table, schema) {
   return async (dispatch, getState) => {
     const currentState = getState();
-    const dbConn = getDBConnByName(database);
-    const queryDefaultSelect = await dbConn.getQuerySelectTop(table, schema);
+    const queryDefaultSelect = await sqlectron.db.getQuerySelectTop(database, table, schema);
 
     if (!shouldExecuteQuery(queryDefaultSelect, currentState)) {
       return;
@@ -71,7 +71,7 @@ export function executeDefaultSelectQueryIfNeeded(database, table, schema) {
     }
 
     dispatch({ type: UPDATE_QUERY, query: queryDefaultSelect, table });
-    dispatch(executeQuery(queryDefaultSelect, true, dbConn));
+    dispatch(executeQuery(queryDefaultSelect, true, database));
   };
 }
 
@@ -230,19 +230,19 @@ function canCancelQuery(state) {
   return !state.connections.disabledFeatures.includes('cancelQuery');
 }
 
-function executeQuery(query, isDefaultSelect = false, dbConnection, queryId) {
+function executeQuery(query, isDefaultSelect = false, database, queryId?) {
   return async (dispatch, getState) => {
     dispatch({ type: EXECUTE_QUERY_REQUEST, query, isDefaultSelect });
     try {
       const state = getState();
-      const dbConn = dbConnection || getCurrentDBConn(state);
+      const db = database || getDatabaseByQueryID(state);
 
       let remoteResult;
       if (canCancelQuery(state)) {
-        executingQueries[queryId] = dbConn.query(query);
+        executingQueries[queryId] = sqlectron.db.query(db, query);
         remoteResult = await executingQueries[queryId].execute();
       } else {
-        remoteResult = await dbConn.executeQuery(query);
+        remoteResult = await sqlectron.db.executeQuery(db, query);
       }
 
       // Remove any "reference" to the remote IPC object

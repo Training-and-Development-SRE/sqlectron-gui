@@ -3,11 +3,10 @@ import PropTypes from 'prop-types';
 import { remote } from 'electron';
 import CollapseIcon from './collapse-icon';
 import TableSubmenu from './table-submenu';
-import { sqlectron } from '../../browser/remote';
+import { DB_CLIENTS } from '../api';
 
 const Menu = remote.Menu;
 const MenuItem = remote.MenuItem;
-const CLIENTS = sqlectron.db.CLIENTS;
 
 export default class DatabaseItem extends Component {
   static propTypes = {
@@ -76,7 +75,7 @@ export default class DatabaseItem extends Component {
 
     this.contextMenu.append(new MenuItem({ type: 'separator' }));
 
-    const { disabledFeatures } = CLIENTS.find((dbClient) => dbClient.key === client);
+    const { disabledFeatures } = DB_CLIENTS.find((dbClient) => dbClient.key === client);
     if (!disabledFeatures || !disabledFeatures.includes('scriptCreateTable')) {
       this.contextMenu.append(
         new MenuItem({

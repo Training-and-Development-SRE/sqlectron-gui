@@ -2,17 +2,18 @@ import { createStore, applyMiddleware } from 'redux';
 import { createLogger as createReduxLogger } from 'redux-logger';
 import thunkMiddleware from 'redux-thunk';
 import rootReducer from '../reducers';
+import { CONFIG } from '../api';
 import { createLogger } from '../../browser/remote';
 
 const middlewares = [thunkMiddleware];
 
 /* eslint global-require:0 */
-const isLogConsoleEnabled = window.SQLECTRON_CONFIG.log.console;
-const isLogFileEnabled = window.SQLECTRON_CONFIG.log.file;
+const isLogConsoleEnabled = CONFIG.log.console;
+const isLogFileEnabled = CONFIG.log.file;
 
 if (isLogConsoleEnabled || isLogFileEnabled) {
   const loggerConfig = {
-    level: window.SQLECTRON_CONFIG.log.level,
+    level: CONFIG.log.level,
     collapsed: true,
     logger: {},
   };

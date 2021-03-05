@@ -1,4 +1,5 @@
-import { getCurrentDBConn } from './connections';
+import { getDatabaseByQueryID } from './connections';
+import { sqlectron } from '../api';
 
 export const FETCH_SCHEMAS_REQUEST = 'FETCH_SCHEMAS_REQUEST';
 export const FETCH_SCHEMAS_SUCCESS = 'FETCH_SCHEMAS_SUCCESS';
@@ -24,8 +25,8 @@ function fetchSchemas(database) {
   return async (dispatch, getState) => {
     dispatch({ type: FETCH_SCHEMAS_REQUEST, database });
     try {
-      const dbConn = getCurrentDBConn(getState());
-      const schemas = await dbConn.listSchemas();
+      const db = getDatabaseByQueryID(getState());
+      const schemas = await sqlectron.listSchemas(db);
       dispatch({ type: FETCH_SCHEMAS_SUCCESS, database, schemas });
     } catch (error) {
       dispatch({ type: FETCH_SCHEMAS_FAILURE, error });

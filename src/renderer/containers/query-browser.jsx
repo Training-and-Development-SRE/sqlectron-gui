@@ -7,7 +7,7 @@ import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import { ResizableBox } from 'react-resizable';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import { sqlectron } from '../../browser/remote';
+import { DB_CLIENTS } from '../api';
 import * as ConnActions from '../actions/connections';
 import * as QueryActions from '../actions/queries';
 import * as DbAction from '../actions/databases';
@@ -62,7 +62,7 @@ const STYLES = {
   resizeable: { width: 'auto', maxWidth: '100%' },
 };
 
-const CLIENTS = sqlectron.db.CLIENTS.reduce((clients, dbClient) => {
+const CLIENTS = DB_CLIENTS.reduce((clients, dbClient) => {
   /* eslint no-param-reassign:0 */
   clients[dbClient.key] = {
     title: dbClient.name,
@@ -522,7 +522,7 @@ class QueryBrowserContainer extends Component {
       );
     });
 
-    const { disabledFeatures } = sqlectron.db.CLIENTS.find(
+    const { disabledFeatures } = DB_CLIENTS.find(
       (dbClient) => dbClient.key === connections.server.client,
     );
 

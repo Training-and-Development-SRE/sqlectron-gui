@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import * as ConfigActions from '../actions/config';
+import { CONFIG } from '../api';
 import imageSrc from './sqlectron.gif';
 
 import '../../../vendor/renderer/semantic-ui/semantic';
@@ -125,7 +126,7 @@ class AppContainer extends Component {
         const loadingInner = document.createElement('div');
 
         const version = document.createElement('H3');
-        version.appendChild(document.createTextNode(`v${window.SQLECTRON_CONFIG.version}`));
+        version.appendChild(document.createTextNode(`v${CONFIG.version}`));
 
         loadingInner.appendChild(version);
         loadingInner.appendChild(img);

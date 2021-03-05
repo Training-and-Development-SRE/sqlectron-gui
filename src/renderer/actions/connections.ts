@@ -1,4 +1,5 @@
 import { sqlectron } from '../../browser/remote';
+import { DB_CLIENTS } from '../api';
 
 export const CLOSE_CONNECTION = 'CLOSE_CONNECTION';
 export const CONNECTION_REQUEST = 'CONNECTION_REQUEST';
@@ -11,7 +12,7 @@ export const TEST_CONNECTION_SUCCESS = 'TEST_CONNECTION_SUCCESS';
 export const TEST_CONNECTION_FAILURE = 'TEST_CONNECTION_FAILURE';
 
 let serverSession;
-export function getCurrentDBConn({ queries } = {}) {
+export function getDatabaseByQueryID({ queries } = {}) {
   if (!serverSession) {
     throw new Error('There is no server available');
   }
@@ -21,20 +22,7 @@ export function getCurrentDBConn({ queries } = {}) {
     return null;
   }
 
-  return getDBConnByName(currentQuery.database);
-}
-
-export function getDBConnByName(database) {
-  if (!serverSession) {
-    throw new Error('There is no server available');
-  }
-
-  const dbConn = serverSession.db(database);
-  if (!dbConn) {
-    throw new Error('This database is not available');
-  }
-
-  return dbConn;
+  return currentQuery.database;
 }
 
 export function setConnecting() {
@@ -67,7 +55,7 @@ export function connect(id, databaseName, reconnecting = false, sshPassphrase) {
       // doesn't have any effect. We need to clone this data and use the new state.
       server = JSON.parse(JSON.stringify(server));
 
-      defaultDatabase = sqlectron.db.CLIENTS.find((c) => c.key === server.client).defaultDatabase;
+      defaultDatabase = DB_CLIENTS.find((c) => c.key === server.client).defaultDatabase;
       database = databaseName || server.database || defaultDatabase;
 
       dispatch({
@@ -152,10 +140,10 @@ export function test(server) {
   return async (dispatch) => {
     const serverCopy = JSON.parse(JSON.stringify(server));
     if (!serverCopy.database) {
-      const defaultDatabase = sqlectron.db.CLIENTS.find((c) => c.key === serverCopy.client)
-        .defaultDatabase;
+      const defaultDatabase = DB_CLIENTS.find((c) => c.key === serverCopy.client).defaultDatabase;
       serverCopy.database = serverCopy.database || defaultDatabase;
     }
+
     dispatch({ type: TEST_CONNECTION_REQUEST, serverCopy });
     let dbClient;
     try {

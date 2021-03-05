@@ -1,4 +1,5 @@
-import { getCurrentDBConn } from './connections';
+import { getDatabaseByQueryID } from './connections';
+import { sqlectron } from '../api';
 
 export const FETCH_TABLES_REQUEST = 'FETCH_TABLES_REQUEST';
 export const FETCH_TABLES_SUCCESS = 'FETCH_TABLES_SUCCESS';
@@ -29,8 +30,8 @@ function fetchTables(database, filter) {
   return async (dispatch, getState) => {
     dispatch({ type: FETCH_TABLES_REQUEST, database });
     try {
-      const dbConn = getCurrentDBConn(getState());
-      const tables = await dbConn.listTables(filter);
+      const db = getDatabaseByQueryID(getState());
+      const tables = await sqlectron.listTables(db, filter);
       dispatch({ type: FETCH_TABLES_SUCCESS, database, tables });
     } catch (error) {
       dispatch({ type: FETCH_TABLES_FAILURE, error });

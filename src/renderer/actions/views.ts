@@ -1,4 +1,5 @@
-import { getCurrentDBConn } from './connections';
+import { getDatabaseByQueryID } from './connections';
+import { sqlectron } from '../api';
 
 export const FETCH_VIEWS_REQUEST = 'FETCH_VIEWS_REQUEST';
 export const FETCH_VIEWS_SUCCESS = 'FETCH_VIEWS_SUCCESS';
@@ -24,8 +25,8 @@ function fetchViews(database, filter) {
   return async (dispatch, getState) => {
     dispatch({ type: FETCH_VIEWS_REQUEST, database });
     try {
-      const dbConn = getCurrentDBConn(getState());
-      const views = await dbConn.listViews(filter);
+      const db = getDatabaseByQueryID(getState());
+      const views = await sqlectron.listViews(db, filter);
       dispatch({ type: FETCH_VIEWS_SUCCESS, database, views });
     } catch (error) {
       dispatch({ type: FETCH_VIEWS_FAILURE, error });
